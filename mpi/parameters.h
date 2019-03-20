@@ -135,8 +135,8 @@
 #	define OPENMP_SUB_THREAD 0
 #endif
 
-#define CACHE_LINE 128
-#define PAGE_SIZE 8192
+#define CACHE_LINE 64
+#define PAGE_SIZE 4096
 //#define PAGE_SIZE 16
 
 //#define IMD_OUT get_imd_out_file()
