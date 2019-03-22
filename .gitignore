@@ -3,3 +3,6 @@ runnable
 .cproject
 .project
 l.*
+log/
+*.csv
+l-P*
