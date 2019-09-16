@@ -698,6 +698,9 @@ private:
 			base_src += nverts * src_offset;
 			base_tgt += nverts * tgt_offset;
 		}
+#ifdef LT_PRINT_EDGES
+        print_with_prefix("LT_PRINT_EDGES:%d-%d", this->scramble(base_src), this->scramble(base_tgt));
+#endif  // LT_PRINT_EDGES
 		result->set(
 				this->scramble(base_src),
 				this->scramble(base_tgt));

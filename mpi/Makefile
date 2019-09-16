@@ -132,7 +132,9 @@ MPICC := scorep --nocompiler --user --static $(MPICC) -DSCOREP
 MPICPP := scorep --nocompiler --user --static $(MPICPP) -DSCOREP
 endif
 
-CPPFLAGS := $(CFLAGS)
+#CPPFLAGS := $(CFLAGS)
+CPPFLAGS := $(CFLAGS) -std=c++11 -DLT_GRAPH_DOT
+#CPPFLAGS := $(CFLAGS) -std=c++11 -DLT_PRINT_EDGES
 
 all: cpu
 

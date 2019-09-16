@@ -16,6 +16,10 @@
 
 // C++ includes
 #include <string>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
 
 #include "parameters.h"
 #include "utils_core.h"
@@ -53,6 +57,26 @@ void graph500_bfs(int SCALE, int edgefactor)
 	generate_graph_spec2010(&edge_list, SCALE, edgefactor);
 	generation_time = MPI_Wtime() - generation_time;
 
+#ifdef LT_GRAPH_DOT
+    std::ostringstream osg;
+    osg << "strict digraph g_" << mpi.rank_2dr << "_" << mpi.rank_2dc << " {\n\tconcentrate=true\n";
+    int num_loops = edge_list.beginRead(false);
+    for(int loop_count = 0; loop_count < num_loops; ++loop_count) {
+        UnweightedPackedEdge* edge_data;
+        const int edge_data_length = edge_list.read(&edge_data);
+        for (int i = 0; i < edge_data_length; ++i) {
+            const int64_t v0 = edge_data[i].v0();
+            const int64_t v1 = edge_data[i].v1();
+            osg << "\t" << v0 << "->" << v1 << "\n";
+        }
+    }
+    edge_list.endRead();
+    osg << "}\n\n";
+    std::ofstream ofs("g_"+std::to_string(mpi.rank_2dr) + "_" + std::to_string(mpi.rank_2dc) +".dot", std::ios::out);
+    ofs << osg.str();
+    ofs.close();
+#endif // LT_GRAPH_DOT
+
 	if(mpi.isMaster()) print_with_prefix("Graph construction");
 	// Create BFS instance and the *COMMUNICATION THREAD*.
 	BfsOnCPU* benchmark = new BfsOnCPU();
@@ -64,6 +88,29 @@ void graph500_bfs(int SCALE, int edgefactor)
 	double redistribution_time = MPI_Wtime();
 	redistribute_edge_2d(&edge_list);
 	redistribution_time = MPI_Wtime() - redistribution_time;
+
+#ifdef LT_GRAPH_DOT
+    osg.clear();
+    osg.str("");
+    osg << "strict digraph g_" << mpi.rank_2dr << "_" << mpi.rank_2dc << " {\n\tconcentrate=true\n";
+    num_loops = edge_list.beginRead(false);
+    for(int loop_count = 0; loop_count < num_loops; ++loop_count) {
+        UnweightedPackedEdge* edge_data;
+        const int edge_data_length = edge_list.read(&edge_data);
+        for (int i = 0; i < edge_data_length; ++i) {
+            const int64_t v0 = edge_data[i].v0();
+            const int64_t v1 = edge_data[i].v1();
+            osg << "\t" << v0 << "->" << v1 << "\n";
+        }
+    }
+    edge_list.endRead();
+    osg << "}\n\n";
+    std::ofstream ofs1("p_"+std::to_string(mpi.rank_2dr) + "_" + std::to_string(mpi.rank_2dc) +".dot", std::ios::out);
+    ofs1 << osg.str();
+    ofs1.close();
+#endif // LT_GRAPH_DOT
+
+    MPI_Finalize();
 
 	int64_t bfs_roots[NUM_BFS_ROOTS];
 	int num_bfs_roots = NUM_BFS_ROOTS;

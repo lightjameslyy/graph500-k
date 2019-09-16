@@ -6,3 +6,5 @@ l.*
 log/
 *.csv
 l-P*
+*.dot
+*.png
